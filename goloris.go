@@ -248,7 +248,7 @@ func dialVictim(hostPort string, isTls bool) io.ReadWriteCloser {
 
 	if *tor {
 		// if using TOR then use a proxy dialer with local tor proxy
-		dialer, err := proxy.SOCKS5("tcp", fmt.Sprintf("%s:%d", *torHost, torPort), nil, nil)
+		dialer, err := proxy.SOCKS5("tcp", fmt.Sprintf("%s:%d", *torHost, *torPort), nil, nil)
 		if err != nil {
 			log.Printf("Error creating TOR proxy: %s\n", err)
 			return nil
