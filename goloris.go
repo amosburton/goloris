@@ -404,8 +404,6 @@ func testAllProxies() {
 					respCh <- testProxy(p, *proxyTimeout)
 				case <-ctx.Done():
 					return
-				case <-c:
-					os.Exit(1)
 				}
 			}
 		}()
@@ -421,6 +419,15 @@ func testAllProxies() {
 			queue <- p
 		}
 		cancel()
+	}()
+
+	go func() {
+		<-c
+		// cleanup and exit
+		log.Printf("stopping attack due to SIGTERM\n")
+		cancel()
+		close(queue)
+		os.Exit(1)
 	}()
 
 	errCnt := 0
