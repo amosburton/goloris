@@ -121,6 +121,7 @@ var (
 )
 
 func main() {
+	http.DefaultTransport.(*http.Transport).MaxIdleConnsPerHost = 100
 	flag.Var(proxySources, "proxy", "space delimited list of proxy sources. "+
 		"Sources can be remote (e.g.: http://example.com/proxy.txt) or local (e.g. ./proxies.txt). "+
 		"Optionally add the protocol to the proxy file by adding the proto before the proxy source: "+
@@ -147,6 +148,9 @@ func main() {
 				if *testProxies {
 					// test proxies if flag was set
 					testAllProxies()
+					if len(proxyPool) < 1 {
+						log.Fatalf("no proxies are accessible")
+					}
 				}
 				go func() {
 					// the go routine that will load proxies every N interval
