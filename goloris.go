@@ -568,11 +568,7 @@ func randomProxyConnection(hostPort string, maxattempts, attempts int) (net.Conn
 			return randomProxyConnection(hostPort, maxattempts, attempts)
 		}
 	}
-
-	c, err := dialer.Dial("tcp", hostPort)
-	if err != nil {
-		log.Printf("Couldn't esablish connection to [%s] via proxy %s. Error: %s\n", hostPort, p, err)
-		deleteProxy(p.String())
+	if err := testProxy(p, *proxyTimeout); err != nil {
 		if attempts > maxattempts {
 			return nil, err
 		} else {
@@ -580,7 +576,10 @@ func randomProxyConnection(hostPort string, maxattempts, attempts int) (net.Conn
 			return randomProxyConnection(hostPort, maxattempts, attempts)
 		}
 	}
-	if err := testProxy(p, *proxyTimeout); err != nil {
+	c, err := dialer.Dial("tcp", hostPort)
+	if err != nil {
+		log.Printf("Couldn't esablish connection to [%s] via proxy %s. Error: %s\n", hostPort, p, err)
+		deleteProxy(p.String())
 		if attempts > maxattempts {
 			return nil, err
 		} else {
